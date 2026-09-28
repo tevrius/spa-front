@@ -83,7 +83,7 @@ export function PlanningPage() {
         }
       />
       <Panel title="Параметры плана" className="filter-panel">
-        <div className="filters">
+        <div className="filters planning-filters">
           <Field label="Период">
             <select
               value={period}
@@ -118,7 +118,7 @@ export function PlanningPage() {
         <Failure error={budget.error} retry={() => budget.refetch()} />
       ) : (
         <>
-          <div className="metric-grid compact">
+          <div className="metric-grid compact planning-metrics">
             <Metric
               label="План закупок"
               value={money(plan.data.total_cost)}
@@ -151,7 +151,7 @@ export function PlanningPage() {
               <span>Проверьте приоритеты позиций в плане.</span>
             </div>
           )}
-          <div className="two-col planning-top">
+          <div className="two-col planning-grid planning-top">
             <Panel
               title="Бюджет по месяцам"
               eyebrow={`${date(budget.data.period_from)} — ${date(budget.data.period_to)}`}
@@ -215,11 +215,11 @@ export function PlanningPage() {
               )}
             </Panel>
           </div>
-          <div className="two-col">
+          <div className="two-col planning-grid">
             <Breakdown title="По категориям" groups={plan.data.by_category} />
             <Breakdown title="По объектам" groups={plan.data.by_location} />
           </div>
-          <div className="two-col">
+          <div className="two-col planning-grid">
             <Breakdown title="По месяцам" groups={plan.data.by_month} />
             <Breakdown title="По товарам" groups={plan.data.by_product} />
           </div>
