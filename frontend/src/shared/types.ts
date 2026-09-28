@@ -1,0 +1,284 @@
+export type Severity = "critical" | "warning" | "info";
+export type Period = "month" | "quarter" | "half_year" | "year";
+export type Explanation = {
+  data_used: string[];
+  period: string;
+  formulas: string[];
+  assumptions: string[];
+  as_of: string;
+};
+export type ApiWarning = {
+  level: "error" | "warning" | "info";
+  message: string;
+};
+export type Meta = {
+  as_of: string;
+  locations: { code: string; name: string }[];
+  categories: string[];
+  alert_types: string[];
+};
+export type Product = {
+  sku: string;
+  name: string;
+  category: string;
+  unit: string;
+  safety_stock_days: number;
+  current_price: number;
+  lead_time_days: number;
+  storage: string;
+  pack_size: number;
+  min_stock: number;
+  default_supplier_id: string;
+};
+export type StockItem = {
+  sku: string;
+  name: string;
+  category: string;
+  unit: string;
+  location: string;
+  location_name: string;
+  qty: number;
+  min_stock: number;
+  safety_stock: number;
+  stock_value: number;
+  days_of_cover: number | null;
+  avg_daily_consumption: number;
+  batches_count: number;
+  nearest_expiry: string | null;
+  updated_at: string;
+};
+export type Batch = {
+  batch_id: string;
+  qty: number;
+  unit: string;
+  received_at: string;
+  expires_at: string | null;
+  days_to_expiry: number | null;
+  status: "ok" | "expiring" | "expired";
+  invoice_no: string;
+  supplier_id: string;
+};
+export type Movement = {
+  movement_id: string;
+  date: string;
+  type: string;
+  qty: number;
+  unit: string;
+  doc_no: string | null;
+  comment: string | null;
+};
+export type MovementPage = {
+  total: number;
+  limit: number;
+  offset: number;
+  items: Movement[];
+};
+export type Alert = {
+  alert_id: string;
+  type: string;
+  severity: Severity;
+  sku: string;
+  name: string;
+  location: string;
+  location_name: string;
+  title: string;
+  message: string;
+  metrics: Record<string, unknown>;
+  recommendation: string;
+  as_of: string;
+};
+export type ReorderItem = {
+  sku: string;
+  name: string;
+  location: string;
+  unit: string;
+  current_stock: number;
+  days_of_cover: number | null;
+  stockout_date: string | null;
+  recommended_qty: number;
+  estimated_cost: number;
+  order_by_date: string;
+  priority: "critical" | "high" | "normal";
+  supplier_name: string;
+  lead_time_days: number;
+};
+export type ReorderList = {
+  horizon_days: number;
+  total_cost: number;
+  items: ReorderItem[];
+  explanation: Explanation;
+};
+export type Dashboard = {
+  as_of: string;
+  location: string | null;
+  kpi: {
+    sku_count: number;
+    stock_value: number;
+    positions_below_reorder_point: number;
+    expiring_batches: number;
+    open_orders_qty: number;
+    open_orders_cost: number;
+    alerts_critical: number;
+    alerts_warning: number;
+    forecast_month_cost: number;
+    procedures_last_30_days: number;
+  };
+  top_alerts: Alert[];
+  next_orders: ReorderItem[];
+};
+export type Forecast = {
+  sku: string;
+  name: string;
+  unit: string;
+  location_name: string;
+  period_from: string;
+  period_to: string;
+  period_days: number;
+  avg_daily_consumption: number;
+  seasonality_factor: number;
+  forecast_demand: number;
+  current_stock: number;
+  incoming_qty: number;
+  expected_stock_without_purchase: number;
+  safety_stock: number;
+  reorder_point: number;
+  recommended_purchase_qty: number;
+  unit_price: number;
+  estimated_cost: number;
+  recommended_order_date: string;
+  stockout_date: string | null;
+  supplier: { name: string; lead_time_days: number };
+  within_budget: boolean | null;
+  explanation: Explanation;
+  warnings: ApiWarning[];
+};
+export type PlanGroup = {
+  key: string;
+  label: string;
+  qty: number | null;
+  cost: number;
+};
+export type PlanLine = {
+  sku: string;
+  name: string;
+  category: string;
+  unit: string;
+  location: string;
+  month: string;
+  qty: number;
+  unit_price: number;
+  cost: number;
+  order_by_date: string;
+};
+export type PurchasePlan = {
+  period_from: string;
+  period_to: string;
+  total_cost: number;
+  total_positions: number;
+  items: PlanLine[];
+  by_month: PlanGroup[];
+  by_category: PlanGroup[];
+  by_product: PlanGroup[];
+  by_location: PlanGroup[];
+  budget_limit: number | null;
+  over_limit_by: number | null;
+  explanation: Explanation;
+  warnings: ApiWarning[];
+};
+export type Budget = {
+  period: Period;
+  period_from: string;
+  period_to: string;
+  total_cost: number;
+  by_month: PlanGroup[];
+  by_category: PlanGroup[];
+  previous_period_cost: number | null;
+  delta_rub: number | null;
+  delta_pct: number | null;
+  limit: number | null;
+  limit_delta_rub: number | null;
+  drivers: {
+    driver: string;
+    label: string;
+    impact_rub: number;
+    impact_pct: number;
+    comment: string;
+  }[];
+  explanation: Explanation;
+  warnings: ApiWarning[];
+};
+export type PriceDynamics = {
+  sku: string;
+  name: string;
+  unit: string;
+  base_period: string;
+  base_avg_price: number | null;
+  current_period: string;
+  current_avg_price: number | null;
+  delta_rub: number | null;
+  delta_pct: number | null;
+  purchases: {
+    date: string;
+    supplier_name: string;
+    unit_price: number;
+    qty: number;
+    invoice_no: string;
+  }[];
+  explanation: Explanation;
+  warnings: ApiWarning[];
+};
+export type Service = {
+  service_id: string;
+  name: string;
+  price: number;
+  norms: { sku: string; name: string; qty: number; unit: string }[];
+};
+export type Supplier = {
+  supplier_id: string;
+  name: string;
+  products: { sku: string; price: number }[];
+};
+export type ServiceEconomics = {
+  service_id: string;
+  name: string;
+  price: number;
+  base_period: string;
+  current_period: string;
+  materials: {
+    sku: string;
+    name: string;
+    unit: string;
+    qty: number;
+    base_price: number;
+    current_price: number;
+    base_cost: number;
+    current_cost: number;
+    delta_pct: number;
+  }[];
+  base_total_cost: number;
+  current_total_cost: number;
+  cost_delta_rub: number;
+  cost_delta_pct: number;
+  base_margin_rub: number;
+  current_margin_rub: number;
+  base_margin_pct: number;
+  current_margin_pct: number;
+  margin_delta_rub: number;
+  margin_delta_pct: number;
+  explanation: Explanation;
+  warnings: ApiWarning[];
+};
+export type ChatSummary = {
+  message_id: string;
+  question: string;
+  intent: string;
+  created_at: string;
+};
+export type ChatMessage = ChatSummary & {
+  answer: string;
+  table: { title: string; columns: string[]; rows: string[][] } | null;
+  calculation: Record<string, unknown> | null;
+  explanation: Explanation | null;
+  warnings: ApiWarning[];
+  follow_up: string[];
+};

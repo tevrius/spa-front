@@ -1,0 +1,268 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "../app/App";
+import { api } from "../shared/api";
+import { downloadJson } from "../shared/export";
+import { date, money, number, percent, periodName } from "../shared/format";
+import type { Period, PlanGroup } from "../shared/types";
+import {
+  DataTable,
+  Empty,
+  ExplanationBlock,
+  Failure,
+  Field,
+  Loading,
+  Metric,
+  PageHeading,
+  Panel,
+  Warnings,
+} from "../shared/ui";
+
+function Breakdown({ title, groups }: { title: string; groups: PlanGroup[] }) {
+  return (
+    <Panel title={title}>
+      {groups.length ? (
+        <div className="breakdown">
+          {groups.map((group) => (
+            <div key={group.key}>
+              <span>{group.label}</span>
+              <strong>{money(group.cost)}</strong>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Empty />
+      )}
+    </Panel>
+  );
+}
+
+export function PlanningPage() {
+  const location = useLocation();
+  const [period, setPeriod] = useState<Period>("quarter");
+  const [limitInput, setLimitInput] = useState("");
+  const limit = limitInput.trim() ? Number(limitInput) : null;
+  const valid = limit === null || limit >= 0;
+  const plan = useQuery({
+    queryKey: ["plan", location, period, limit],
+    queryFn: () => api.plan({ period, location, budget_limit: limit }),
+    enabled: valid,
+  });
+  const budget = useQuery({
+    queryKey: ["budget", location, period, limit],
+    queryFn: () =>
+      api.budget({ period, location, limit, compare_with_previous: true }),
+    enabled: valid,
+  });
+  const maxMonth = Math.max(
+    1,
+    ...(budget.data?.by_month.map((item) => item.cost) || []),
+  );
+  return (
+    <>
+      <PageHeading
+        eyebrow="ЗАКУПКИ / ПЛАНИРОВАНИЕ"
+        title="План и бюджет"
+        description="Стоимость по месяцам, категориям и позициям. Изменение бюджета сопровождается объяснением причин."
+        action={
+          plan.data &&
+          budget.data && (
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() =>
+                downloadJson(`purchase-plan-${location}-${period}.json`, {
+                  plan: plan.data,
+                  budget: budget.data,
+                })
+              }
+            >
+              Скачать план ↓
+            </button>
+          )
+        }
+      />
+      <Panel title="Параметры плана" className="filter-panel">
+        <div className="filters">
+          <Field label="Период">
+            <select
+              value={period}
+              onChange={(event) => setPeriod(event.target.value as Period)}
+            >
+              {(Object.keys(periodName) as Period[]).map((item) => (
+                <option key={item} value={item}>
+                  {periodName[item]}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Лимит бюджета, ₽">
+            <input
+              type="number"
+              min="0"
+              placeholder="Без лимита"
+              value={limitInput}
+              onChange={(event) => setLimitInput(event.target.value)}
+            />
+          </Field>
+        </div>
+        {!valid && (
+          <p className="form-error">Лимит должен быть неотрицательным.</p>
+        )}
+      </Panel>
+      {!valid ? null : plan.isPending || budget.isPending ? (
+        <Loading label="Формируем план и бюджет…" />
+      ) : plan.isError ? (
+        <Failure error={plan.error} retry={() => plan.refetch()} />
+      ) : budget.isError ? (
+        <Failure error={budget.error} retry={() => budget.refetch()} />
+      ) : (
+        <>
+          <div className="metric-grid compact">
+            <Metric
+              label="План закупок"
+              value={money(plan.data.total_cost)}
+              note={`${date(plan.data.period_from)} — ${date(plan.data.period_to)}`}
+            />
+            <Metric
+              label="Позиции в плане"
+              value={number(plan.data.total_positions)}
+              note="По выбранному объекту"
+            />
+            <Metric
+              label="Бюджет периода"
+              value={money(budget.data.total_cost)}
+              note={periodName[period]}
+            />
+            <Metric
+              label="К предыдущему периоду"
+              value={percent(budget.data.delta_pct)}
+              note={
+                budget.data.delta_rub == null
+                  ? "Нет данных для сравнения"
+                  : money(budget.data.delta_rub)
+              }
+            />
+          </div>
+          <Warnings items={[...plan.data.warnings, ...budget.data.warnings]} />
+          {plan.data.over_limit_by != null && plan.data.over_limit_by > 0 && (
+            <div className="notice notice-warning">
+              <strong>Выше лимита на {money(plan.data.over_limit_by)}</strong>
+              <span>Проверьте приоритеты позиций в плане.</span>
+            </div>
+          )}
+          <div className="two-col planning-top">
+            <Panel
+              title="Бюджет по месяцам"
+              eyebrow={`${date(budget.data.period_from)} — ${date(budget.data.period_to)}`}
+            >
+              {budget.data.by_month.length ? (
+                <div
+                  className="bar-chart"
+                  role="group"
+                  aria-label="Бюджет закупок по месяцам"
+                >
+                  {budget.data.by_month.map((item) => (
+                    <div className="bar-row" key={item.key}>
+                      <span>{item.label}</span>
+                      <div className="bar-track" aria-hidden="true">
+                        <div
+                          className="bar-fill"
+                          style={{ width: `${(item.cost / maxMonth) * 100}%` }}
+                        />
+                      </div>
+                      <strong>{money(item.cost)}</strong>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Empty />
+              )}
+              <p className="chart-note">
+                Суммы и разбивка получены из API. Шкала показывает долю от
+                максимального месяца.
+              </p>
+            </Panel>
+            <Panel
+              title="Почему бюджет изменился"
+              eyebrow="СРАВНЕНИЕ С ПРЕДЫДУЩИМ ПЕРИОДОМ"
+            >
+              <div className="budget-compare">
+                <span>Предыдущий период</span>
+                <strong>{money(budget.data.previous_period_cost)}</strong>
+                <span>Изменение</span>
+                <strong>
+                  {money(budget.data.delta_rub)} ·{" "}
+                  {percent(budget.data.delta_pct)}
+                </strong>
+              </div>
+              {budget.data.drivers.length ? (
+                <div className="drivers">
+                  {budget.data.drivers.map((driver) => (
+                    <div key={driver.driver}>
+                      <div>
+                        <strong>{driver.label}</strong>
+                        <b>{money(driver.impact_rub)}</b>
+                      </div>
+                      <p>
+                        {driver.comment} · {percent(driver.impact_pct)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <Empty>Драйверов изменения нет.</Empty>
+              )}
+            </Panel>
+          </div>
+          <div className="two-col">
+            <Breakdown title="По категориям" groups={plan.data.by_category} />
+            <Breakdown title="По объектам" groups={plan.data.by_location} />
+          </div>
+          <div className="two-col">
+            <Breakdown title="По месяцам" groups={plan.data.by_month} />
+            <Breakdown title="По товарам" groups={plan.data.by_product} />
+          </div>
+          <Panel title="Строки плана" eyebrow="ОБЪЁМ, СТОИМОСТЬ И ДАТА ЗАКАЗА">
+            {plan.data.items.length ? (
+              <DataTable
+                headers={[
+                  "Месяц",
+                  "Позиция",
+                  "Категория",
+                  "Объект",
+                  "Количество",
+                  "Заказать до",
+                  "Стоимость",
+                ]}
+              >
+                {plan.data.items.map((item, index) => (
+                  <tr
+                    key={`${item.month}-${item.location}-${item.sku}-${index}`}
+                  >
+                    <td>{item.month}</td>
+                    <td>
+                      <strong>{item.name}</strong>
+                      <span className="table-sub">{item.sku}</span>
+                    </td>
+                    <td>{item.category}</td>
+                    <td>{item.location}</td>
+                    <td>
+                      {number(item.qty)} {item.unit}
+                    </td>
+                    <td>{date(item.order_by_date)}</td>
+                    <td>{money(item.cost)}</td>
+                  </tr>
+                ))}
+              </DataTable>
+            ) : (
+              <Empty>На выбранный период план пуст.</Empty>
+            )}
+          </Panel>
+          <ExplanationBlock value={plan.data.explanation} />
+          <ExplanationBlock value={budget.data.explanation} />
+        </>
+      )}
+    </>
+  );
+}
