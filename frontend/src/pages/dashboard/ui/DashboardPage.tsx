@@ -1,10 +1,11 @@
 import styles from "./DashboardPage.module.css";
-import ui from "../shared/ui.module.css";
+import ui from "@/shared/ui/ui.module.css";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { date, money, number, plural } from "../shared/format";
+import { useSelectedLocation } from "@/features/location";
+import { inventoryQueries } from "@/entities/inventory";
+import { routePaths } from "@/shared/config/routes";
+import { date, money, number, plural } from "@/shared/lib/format";
 import {
   Empty,
   Failure,
@@ -13,14 +14,11 @@ import {
   PageHeading,
   Panel,
   Status,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 export function DashboardPage() {
-  const location = useLocation();
-  const query = useQuery({
-    queryKey: ["dashboard", location],
-    queryFn: () => api.dashboard(location),
-  });
+  const location = useSelectedLocation();
+  const query = useQuery(inventoryQueries.dashboard(location));
   if (query.isPending) return <Loading />;
   if (query.isError)
     return <Failure error={query.error} retry={() => query.refetch()} />;
@@ -34,7 +32,7 @@ export function DashboardPage() {
         action={
           <Link
             className={[ui["button"], ui["primary"]].join(" ")}
-            to="/reorder"
+            to={routePaths.reorder}
           >
             Что заказать →
           </Link>
@@ -63,7 +61,10 @@ export function DashboardPage() {
             истекающим сроком
           </p>
         </div>
-        <Link to="/alerts" className={[ui["button"], ui["light"]].join(" ")}>
+        <Link
+          to={routePaths.alerts}
+          className={[ui["button"], ui["light"]].join(" ")}
+        >
           Разобрать риски →
         </Link>
       </div>
@@ -94,7 +95,7 @@ export function DashboardPage() {
           title="Главные риски"
           eyebrow="ЧТО ВАЖНО СЕГОДНЯ"
           action={
-            <Link to="/alerts" className={ui["text-link"]}>
+            <Link to={routePaths.alerts} className={ui["text-link"]}>
               Все риски →
             </Link>
           }
@@ -103,7 +104,7 @@ export function DashboardPage() {
             <div className={styles["list-stack"]}>
               {top_alerts.slice(0, 5).map((alert) => (
                 <Link
-                  to={`/stock/${alert.sku}`}
+                  to={routePaths.product(alert.sku)}
                   className={styles["list-row"]}
                   key={alert.alert_id}
                 >
@@ -126,7 +127,7 @@ export function DashboardPage() {
           title="Ближайшие заказы"
           eyebrow="ПЛАН НА 14 ДНЕЙ"
           action={
-            <Link to="/reorder" className={ui["text-link"]}>
+            <Link to={routePaths.reorder} className={ui["text-link"]}>
               Весь список →
             </Link>
           }
@@ -135,7 +136,7 @@ export function DashboardPage() {
             <div className={styles["list-stack"]}>
               {next_orders.slice(0, 5).map((item) => (
                 <Link
-                  to={`/forecast?sku=${item.sku}`}
+                  to={`${routePaths.forecast}?sku=${encodeURIComponent(item.sku)}`}
                   className={styles["list-row"]}
                   key={`${item.location}-${item.sku}`}
                 >

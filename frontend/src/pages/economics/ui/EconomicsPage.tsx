@@ -1,9 +1,10 @@
 import styles from "./EconomicsPage.module.css";
-import ui from "../shared/ui.module.css";
-import { useState } from "react";
+import ui from "@/shared/ui/ui.module.css";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api } from "../shared/api";
-import { date, money, number, percent } from "../shared/format";
+import { economicsApi, economicsQueries } from "@/entities/economics";
+import { inventoryQueries } from "@/entities/inventory";
+import { date, money, number, percent } from "@/shared/lib/format";
 import {
   DataTable,
   Empty,
@@ -15,15 +16,12 @@ import {
   PageHeading,
   Panel,
   Warnings,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 export function EconomicsPage() {
-  const products = useQuery({ queryKey: ["products"], queryFn: api.products });
-  const services = useQuery({ queryKey: ["services"], queryFn: api.services });
-  const suppliers = useQuery({
-    queryKey: ["suppliers"],
-    queryFn: api.suppliers,
-  });
+  const products = useQuery(inventoryQueries.products());
+  const services = useQuery(economicsQueries.services());
+  const suppliers = useQuery(economicsQueries.suppliers());
   const [selectedSku, setSelectedSku] = useState("");
   const [selectedService, setSelectedService] = useState("");
   const [supplier, setSupplier] = useState("");
@@ -31,22 +29,27 @@ export function EconomicsPage() {
   const sku = selectedSku || products.data?.[0]?.sku || "";
   const serviceId = selectedService || services.data?.[0]?.service_id || "";
   const priceQuery = useQuery({
-    queryKey: ["price-dynamics", sku, supplier],
-    queryFn: () => api.prices(sku, supplier),
+    ...economicsQueries.prices(sku, supplier),
     enabled: !!sku,
   });
   const costQuery = useQuery({
-    queryKey: ["service-cost", serviceId],
-    queryFn: () => api.serviceCost(serviceId),
+    ...economicsQueries.serviceCost(serviceId),
     enabled: !!serviceId,
   });
   const simulation = useMutation({
     mutationFn: (body: {
       service_id: string;
       price_changes: { sku: string; delta_pct: number }[];
-    }) => api.simulate(body),
+    }) => economicsApi.simulate(body),
   });
   const service = services.data?.find((item) => item.service_id === serviceId);
+  const availableSuppliers = useMemo(
+    () =>
+      suppliers.data?.filter((item) =>
+        item.products.some((product) => product.sku === sku),
+      ) ?? [],
+    [suppliers.data, sku],
+  );
   return (
     <>
       <PageHeading
@@ -79,15 +82,11 @@ export function EconomicsPage() {
                   onChange={(event) => setSupplier(event.target.value)}
                 >
                   <option value="">Все поставщики</option>
-                  {suppliers.data
-                    ?.filter((item) =>
-                      item.products.some((product) => product.sku === sku),
-                    )
-                    .map((item) => (
-                      <option value={item.supplier_id} key={item.supplier_id}>
-                        {item.name}
-                      </option>
-                    ))}
+                  {availableSuppliers.map((item) => (
+                    <option value={item.supplier_id} key={item.supplier_id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
               </Field>
             </div>

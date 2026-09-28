@@ -1,11 +1,12 @@
 import styles from "./AlertsPage.module.css";
-import ui from "../shared/ui.module.css";
+import ui from "@/shared/ui/ui.module.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { alertNames, date, money, number, percent } from "../shared/format";
+import { useSelectedLocation } from "@/features/location";
+import { inventoryQueries } from "@/entities/inventory";
+import { routePaths } from "@/shared/config/routes";
+import { alertNames, date, money, number, percent } from "@/shared/lib/format";
 import {
   Empty,
   Failure,
@@ -14,7 +15,7 @@ import {
   PageHeading,
   Panel,
   Status,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 const metricNames: Record<string, string> = {
   avg_daily_consumption: "Расход в день",
@@ -52,13 +53,10 @@ function metricText(key: string, value: unknown): string {
 }
 
 export function AlertsPage({ alertTypes }: { alertTypes: string[] }) {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [type, setType] = useState("");
   const [severity, setSeverity] = useState("");
-  const query = useQuery({
-    queryKey: ["alerts", location, type, severity],
-    queryFn: () => api.alerts(location, type, severity),
-  });
+  const query = useQuery(inventoryQueries.alerts(location, type, severity));
   return (
     <>
       <PageHeading
@@ -133,7 +131,10 @@ export function AlertsPage({ alertTypes }: { alertTypes: string[] }) {
                 <strong>Что сделать</strong>
                 <p>{alert.recommendation}</p>
               </div>
-              <Link to={`/stock/${alert.sku}`} className={ui["text-link"]}>
+              <Link
+                to={routePaths.product(alert.sku)}
+                className={ui["text-link"]}
+              >
                 Карточка позиции →
               </Link>
             </article>

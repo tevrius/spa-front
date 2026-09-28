@@ -1,12 +1,12 @@
 import styles from "./PlanningPage.module.css";
-import ui from "../shared/ui.module.css";
-import { useState } from "react";
+import ui from "@/shared/ui/ui.module.css";
+import { memo, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { downloadJson } from "../shared/export";
-import { date, money, number, percent, periodName } from "../shared/format";
-import type { Period, PlanGroup } from "../shared/types";
+import { useSelectedLocation } from "@/features/location";
+import { procurementQueries } from "@/entities/procurement";
+import { downloadJson } from "@/shared/lib/export";
+import { date, money, number, percent, periodName } from "@/shared/lib/format";
+import type { Period, PlanGroup } from "@/shared/types";
 import {
   DataTable,
   Empty,
@@ -18,9 +18,15 @@ import {
   PageHeading,
   Panel,
   Warnings,
-} from "../shared/ui";
+} from "@/shared/ui";
 
-function Breakdown({ title, groups }: { title: string; groups: PlanGroup[] }) {
+const Breakdown = memo(function Breakdown({
+  title,
+  groups,
+}: {
+  title: string;
+  groups: PlanGroup[];
+}) {
   return (
     <Panel title={title}>
       {groups.length ? (
@@ -37,28 +43,31 @@ function Breakdown({ title, groups }: { title: string; groups: PlanGroup[] }) {
       )}
     </Panel>
   );
-}
+});
 
 export function PlanningPage() {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [period, setPeriod] = useState<Period>("quarter");
   const [limitInput, setLimitInput] = useState("");
   const limit = limitInput.trim() ? Number(limitInput) : null;
   const valid = limit === null || limit >= 0;
   const plan = useQuery({
-    queryKey: ["plan", location, period, limit],
-    queryFn: () => api.plan({ period, location, budget_limit: limit }),
+    ...procurementQueries.plan({ period, location, budget_limit: limit }),
     enabled: valid,
   });
   const budget = useQuery({
-    queryKey: ["budget", location, period, limit],
-    queryFn: () =>
-      api.budget({ period, location, limit, compare_with_previous: true }),
+    ...procurementQueries.budget({
+      period,
+      location,
+      limit,
+      compare_with_previous: true,
+    }),
     enabled: valid,
   });
-  const maxMonth = Math.max(
-    1,
-    ...(budget.data?.by_month.map((item) => item.cost) || []),
+  const maxMonth = useMemo(
+    () =>
+      Math.max(1, ...(budget.data?.by_month.map((item) => item.cost) || [])),
+    [budget.data],
   );
   return (
     <>

@@ -1,11 +1,11 @@
 import styles from "./ChatPage.module.css";
-import ui from "../shared/ui.module.css";
-import { useState } from "react";
+import ui from "@/shared/ui/ui.module.css";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { date, money, number, percent } from "../shared/format";
-import type { ChatMessage } from "../shared/types";
+import { useSelectedLocation } from "@/features/location";
+import { assistantApi, assistantQueries } from "@/entities/assistant";
+import { date, money, number, percent } from "@/shared/lib/format";
+import type { ChatMessage } from "@/shared/types";
 import {
   DataTable,
   Empty,
@@ -16,7 +16,7 @@ import {
   PageHeading,
   Panel,
   Warnings,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 const calculationLabels: Record<string, string> = {
   recommended_purchase_qty: "Рекомендуемый объём",
@@ -51,23 +51,27 @@ function displayCalculation(
   return String(value);
 }
 
-function Answer({
+const Answer = memo(function Answer({
   item,
   onFollowUp,
 }: {
   item: ChatMessage;
   onFollowUp: (question: string) => void;
 }) {
-  const highlights = item.calculation
-    ? Object.entries(item.calculation)
-        .filter(
-          ([key, value]) =>
-            key in calculationLabels &&
-            (value == null ||
-              ["string", "number", "boolean"].includes(typeof value)),
-        )
-        .slice(0, 8)
-    : [];
+  const highlights = useMemo(
+    () =>
+      item.calculation
+        ? Object.entries(item.calculation)
+            .filter(
+              ([key, value]) =>
+                key in calculationLabels &&
+                (value == null ||
+                  ["string", "number", "boolean"].includes(typeof value)),
+            )
+            .slice(0, 8)
+        : [],
+    [item.calculation],
+  );
   return (
     <div className={styles["answer"]}>
       <div className={styles["question-bubble"]}>{item.question}</div>
@@ -133,31 +137,24 @@ function Answer({
       </div>
     </div>
   );
-}
+});
 
 export function ChatPage() {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const client = useQueryClient();
   const [input, setInput] = useState("");
   const [limitInput, setLimitInput] = useState("");
   const [selectedId, setSelectedId] = useState("");
   const [latest, setLatest] = useState<ChatMessage | null>(null);
-  const history = useQuery({
-    queryKey: ["chat-history"],
-    queryFn: api.chatHistory,
-  });
-  const examples = useQuery({
-    queryKey: ["chat-examples"],
-    queryFn: api.chatExamples,
-  });
+  const history = useQuery(assistantQueries.history());
+  const examples = useQuery(assistantQueries.examples());
   const selected = useQuery({
-    queryKey: ["chat-message", selectedId],
-    queryFn: () => api.chatMessage(selectedId),
+    ...assistantQueries.message(selectedId),
     enabled: !!selectedId,
   });
   const send = useMutation({
     mutationFn: (message: string) =>
-      api.ask({
+      assistantApi.ask({
         message,
         location,
         budget_limit: limitInput.trim() ? Number(limitInput) : null,
@@ -166,12 +163,18 @@ export function ChatPage() {
       setLatest(item);
       setSelectedId("");
       setInput("");
-      client.invalidateQueries({ queryKey: ["chat-history"] });
+      void client.invalidateQueries({
+        queryKey: assistantQueries.history().queryKey,
+      });
     },
   });
-  const ask = (question: string) => {
-    if (question.trim() && !send.isPending) send.mutate(question.trim());
-  };
+  const { mutate, isPending } = send;
+  const ask = useCallback(
+    (question: string) => {
+      if (question.trim() && !isPending) mutate(question.trim());
+    },
+    [isPending, mutate],
+  );
   const visible = selectedId ? selected.data : latest;
   return (
     <>

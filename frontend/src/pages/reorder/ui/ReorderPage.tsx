@@ -1,11 +1,12 @@
-import ui from "../shared/ui.module.css";
+import ui from "@/shared/ui/ui.module.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { downloadJson } from "../shared/export";
-import { date, money, number } from "../shared/format";
+import { useSelectedLocation } from "@/features/location";
+import { procurementQueries } from "@/entities/procurement";
+import { routePaths } from "@/shared/config/routes";
+import { downloadJson } from "@/shared/lib/export";
+import { date, money, number } from "@/shared/lib/format";
 import {
   DataTable,
   Empty,
@@ -17,15 +18,12 @@ import {
   PageHeading,
   Panel,
   Status,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 export function ReorderPage() {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [horizon, setHorizon] = useState(14);
-  const query = useQuery({
-    queryKey: ["reorder", location, horizon],
-    queryFn: () => api.reorder(location, horizon),
-  });
+  const query = useQuery(procurementQueries.reorder(location, horizon));
   return (
     <>
       <PageHeading
@@ -98,7 +96,7 @@ export function ReorderPage() {
                         <Status kind={item.priority} />
                         <Link
                           className={ui["table-title"]}
-                          to={`/forecast?sku=${item.sku}`}
+                          to={`${routePaths.forecast}?sku=${encodeURIComponent(item.sku)}`}
                         >
                           {item.name}
                         </Link>

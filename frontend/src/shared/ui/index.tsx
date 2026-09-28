@@ -1,7 +1,7 @@
 import styles from "./ui.module.css";
-import type { ReactNode } from "react";
-import { date, severityNames } from "./format";
-import type { ApiWarning, Explanation } from "./types";
+import { memo, type ReactNode } from "react";
+import { date, severityNames } from "../lib/format";
+import type { ApiWarning, Explanation } from "../types";
 
 export function Panel({
   title,
@@ -180,7 +180,7 @@ export function ExplanationBlock({
   );
 }
 
-export function Metric({
+export const Metric = memo(function Metric({
   label,
   value,
   note,
@@ -202,7 +202,7 @@ export function Metric({
       {note && <small>{note}</small>}
     </div>
   );
-}
+});
 
 export function Field({
   label,

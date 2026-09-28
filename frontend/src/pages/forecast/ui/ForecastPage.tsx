@@ -1,12 +1,13 @@
 import styles from "./ForecastPage.module.css";
-import ui from "../shared/ui.module.css";
+import ui from "@/shared/ui/ui.module.css";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { downloadJson } from "../shared/export";
-import { date, money, number } from "../shared/format";
+import { useSelectedLocation } from "@/features/location";
+import { inventoryQueries } from "@/entities/inventory";
+import { procurementQueries } from "@/entities/procurement";
+import { downloadJson } from "@/shared/lib/export";
+import { date, money, number } from "@/shared/lib/format";
 import {
   ExplanationBlock,
   Empty,
@@ -17,12 +18,12 @@ import {
   PageHeading,
   Panel,
   Warnings,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 export function ForecastPage() {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const products = useQuery({ queryKey: ["products"], queryFn: api.products });
+  const products = useQuery(inventoryQueries.products());
   const requestedSku = searchParams.get("sku") || "";
   const sku = products.data?.some((item) => item.sku === requestedSku)
     ? requestedSku
@@ -43,15 +44,13 @@ export function ForecastPage() {
     safetyDays >= 0 && safetyDays <= 180 && (limit === null || limit >= 0);
   const valid = sku !== "" && validInputs;
   const query = useQuery({
-    queryKey: ["forecast", sku, location, months, safetyDays, limit],
-    queryFn: () =>
-      api.forecast({
-        sku,
-        location,
-        horizon_months: months,
-        safety_stock_days: safetyDays,
-        budget_limit: limit,
-      }),
+    ...procurementQueries.forecast({
+      sku,
+      location,
+      horizon_months: months,
+      safety_stock_days: safetyDays,
+      budget_limit: limit,
+    }),
     enabled: valid,
   });
   return (

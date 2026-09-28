@@ -16,8 +16,8 @@ React + TypeScript + Vite приложение для управляющего �
 ## Стек
 
 - React 19, TypeScript 6, Vite 8;
-- React Router 7 и TanStack Query 5;
-- CSS Modules, Vitest, Prettier.
+- React Router 7, TanStack Query 5, Axios и Zustand 5;
+- CSS Modules, Vitest, ESLint и Prettier.
 
 ## Запуск
 
@@ -52,25 +52,32 @@ Dev-сервер передаёт запросы `/api` отдельно зап�
 
 ## Команды
 
-| Команда | Назначение |
-| --- | --- |
-| `npm run dev` | Локальный сервер Vite |
-| `npm run build` | Проверка TypeScript и сборка в `dist/` |
-| `npm run preview` | Просмотр собранной версии; для запросов к API нужен `VITE_API_URL` при сборке или внешний прокси |
-| `npm test` | Тесты Vitest |
-| `npm run format` | Форматирование исходников Prettier |
+| Команда                | Назначение                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run dev`          | Локальный сервер Vite                                                                            |
+| `npm run build`        | Проверка TypeScript и сборка в `dist/`                                                           |
+| `npm run preview`      | Просмотр собранной версии; для запросов к API нужен `VITE_API_URL` при сборке или внешний прокси |
+| `npm test`             | Тесты Vitest                                                                                     |
+| `npm run lint`         | Проверка TypeScript/React правил ESLint                                                          |
+| `npm run lint:fix`     | Исправление правил ESLint с автоматической правкой                                               |
+| `npm run format`       | Форматирование исходников Prettier                                                               |
+| `npm run format:check` | Проверка форматирования без изменений                                                            |
 
 ## Архитектура
 
-- `src/app` — маршруты, общий макет и выбор объекта;
-- `src/pages` — экраны приложения;
-- `src/shared/api.ts` — единый клиент запросов к mock API;
-- `src/shared/types.ts` — типы ответов API;
-- `src/shared/ui.tsx` — общие компоненты состояний, таблиц и обоснования расчётов;
-- `src/shared/format.ts` и `src/shared/export.ts` — форматирование и выгрузка JSON.
-- `src/global.css` — базовая типографика и сброс стилей; `*.module.css` рядом с компонентами и страницами — их оформление.
+- `src/app` — глобальные провайдеры TanStack Query и React Router, регистрация страниц;
+- `src/pages/<раздел>/ui` — экраны и их CSS Modules;
+- `src/widgets/app-shell` — общий макет с навигацией;
+- `src/features/location` — Zustand store выбранного объекта и селектор с учётом данных API;
+- `src/entities/<домен>/api` — функции запросов и фабрики `queryOptions` для метаданных, склада, закупок, экономики и помощника; импорт через `index.ts` домена;
+- `src/shared/api/client.ts` — единый Axios-клиент с обработкой ошибок; `endpoints.ts` — типизированный объект адресов API и кодирование параметров;
+- `src/shared/config/routes.ts` — имена путей и пункты навигации, `src/app/router/router.tsx` — привязка путей к страницам;
+- `src/shared/types.ts` — контракт ответов mock API; `src/shared/ui` — общие компоненты; `src/shared/lib` — форматирование и выгрузка JSON;
+- `src/global.css` — базовая типографика и сброс стилей.
 
-TanStack Query хранит серверные данные и разделяет кеш по параметрам запроса. Показатели закупок и бюджета frontend не рассчитывает: он отображает значения из API. Для запросов предусмотрены состояния загрузки, ошибки и пустого результата. Тесты API-клиента находятся в `src/shared/api.test.ts`.
+Зависимости направлены от верхних слоёв FSD к нижним: `app → pages → widgets → features → entities → shared`. Для нового экрана добавьте путь в `routePaths`, пункт меню в `navigation` (если нужен) и элемент маршрута в `app/router/router.tsx`. Для нового запроса добавьте адрес в `endpoints`, функцию и `queryOptions` в соответствующий домен. TanStack Query хранит серверные данные и разделяет кеш по параметрам запроса, Zustand хранит только выбранный объект. Показатели закупок и бюджета frontend не рассчитывает: он отображает значения из API. Для запросов предусмотрены состояния загрузки, ошибки и пустого результата. Тесты композиции API находятся в `src/app/api-composition.test.ts`.
+
+ESLint проверяет TypeScript и правила React Hooks. Prettier задаёт формат через `.prettierrc.json`; перед коммитом выполняйте `npm run lint`, `npm run format:check`, `npm test` и `npm run build`.
 
 ## Данные демонстрации
 

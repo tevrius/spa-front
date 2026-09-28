@@ -1,10 +1,11 @@
-import ui from "../shared/ui.module.css";
+import ui from "@/shared/ui/ui.module.css";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "../app/App";
-import { api } from "../shared/api";
-import { date, money, movementNames, number } from "../shared/format";
+import { useSelectedLocation } from "@/features/location";
+import { inventoryQueries } from "@/entities/inventory";
+import { routePaths } from "@/shared/config/routes";
+import { date, money, movementNames, number } from "@/shared/lib/format";
 import {
   DataTable,
   Empty,
@@ -15,16 +16,13 @@ import {
   PageHeading,
   Panel,
   Status,
-} from "../shared/ui";
+} from "@/shared/ui";
 
 export function StockPage({ categories }: { categories: string[] }) {
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [category, setCategory] = useState("");
   const [belowMin, setBelowMin] = useState(false);
-  const query = useQuery({
-    queryKey: ["stock", location, category, belowMin],
-    queryFn: () => api.stock(location, category, belowMin),
-  });
+  const query = useQuery(inventoryQueries.stock(location, category, belowMin));
   return (
     <>
       <PageHeading
@@ -77,7 +75,10 @@ export function StockPage({ categories }: { categories: string[] }) {
             {query.data.map((item) => (
               <tr key={`${item.location}-${item.sku}`}>
                 <td>
-                  <Link className={ui["table-title"]} to={`/stock/${item.sku}`}>
+                  <Link
+                    className={ui["table-title"]}
+                    to={routePaths.product(item.sku)}
+                  >
                     {item.name}
                   </Link>
                   <span className={ui["table-sub"]}>
@@ -112,25 +113,23 @@ export function StockPage({ categories }: { categories: string[] }) {
 
 export function ProductPage() {
   const { sku = "" } = useParams();
-  const location = useLocation();
+  const location = useSelectedLocation();
   const [offset, setOffset] = useState(0);
   const product = useQuery({
-    queryKey: ["product", sku],
-    queryFn: () => api.product(sku),
+    ...inventoryQueries.product(sku),
+    enabled: !!sku,
   });
   const stock = useQuery({
-    queryKey: ["stock-item", sku, location],
-    queryFn: () =>
-      api.stock(location, "", false, sku).then((items) => items[0]),
+    ...inventoryQueries.stockItem(sku, location),
     enabled: !!sku,
   });
   const batches = useQuery({
-    queryKey: ["batches", sku, location],
-    queryFn: () => api.batches(sku, location),
+    ...inventoryQueries.batches(sku, location),
+    enabled: !!sku,
   });
   const movements = useQuery({
-    queryKey: ["movements", sku, location, offset],
-    queryFn: () => api.movements(sku, location, offset),
+    ...inventoryQueries.movements(sku, location, offset),
+    enabled: !!sku,
   });
   if (product.isPending) return <Loading />;
   if (product.isError)
@@ -138,7 +137,7 @@ export function ProductPage() {
   const item = stock.data;
   return (
     <>
-      <Link to="/stock" className={ui["back-link"]}>
+      <Link to={routePaths.stock} className={ui["back-link"]}>
         ← Все остатки
       </Link>
       <PageHeading
@@ -148,7 +147,7 @@ export function ProductPage() {
         action={
           <Link
             className={[ui["button"], ui["primary"]].join(" ")}
-            to={`/forecast?sku=${sku}`}
+            to={`${routePaths.forecast}?sku=${encodeURIComponent(sku)}`}
           >
             Рассчитать закупку →
           </Link>
