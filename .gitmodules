@@ -1,0 +1,3 @@
+[submodule "backend"]
+	path = backend
+	url = https://gitverse.ru/kkk_s/moc_api_spa.git
