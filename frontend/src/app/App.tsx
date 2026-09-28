@@ -1,3 +1,5 @@
+import styles from "./App.module.css";
+import ui from "../shared/ui.module.css";
 import { createContext, useContext, useState } from "react";
 import {
   BrowserRouter,
@@ -51,14 +53,14 @@ function AppContent() {
   const location = selected || meta.data.locations[0]?.code || "";
   return (
     <LocationContext.Provider value={location}>
-      <div className="app-shell">
-        <aside className="sidebar">
+      <div className={styles["app-shell"]}>
+        <aside className={styles["sidebar"]}>
           <NavLink
             to="/"
-            className="brand"
+            className={styles["brand"]}
             aria-label="Mountain and Sea Spa, на главную"
           >
-            <span className="brand-mark">
+            <span className={styles["brand-mark"]}>
               M<span>·</span>S
             </span>
             <span>
@@ -66,7 +68,7 @@ function AppContent() {
               <small>SPA / INVENTORY</small>
             </span>
           </NavLink>
-          <div className="sidebar-label">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+          <div className={styles["sidebar-label"]}>РАБОЧЕЕ ПРОСТРАНСТВО</div>
           <nav aria-label="Основная навигация">
             {nav.map((item) => (
               <NavLink
@@ -74,34 +76,42 @@ function AppContent() {
                 to={item.to}
                 end={item.to === "/"}
                 className={({ isActive }) =>
-                  `nav-link ${isActive ? "active" : ""}`
+                  [styles["nav-link"], isActive && styles["active"]]
+                    .filter(Boolean)
+                    .join(" ")
                 }
               >
-                <span className="nav-icon" aria-hidden="true">
+                <span className={styles["nav-icon"]} aria-hidden="true">
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
               </NavLink>
             ))}
           </nav>
-          <div className="sidebar-foot">
-            <span className="online-dot" /> Данные на {date(meta.data.as_of)}
+          <div className={styles["sidebar-foot"]}>
+            <span className={styles["online-dot"]} /> Данные на{" "}
+            {date(meta.data.as_of)}
             <small>Рекомендации требуют решения управляющего</small>
           </div>
         </aside>
-        <div className="workspace">
-          <header className="topbar">
-            <div className="mobile-brand">
+        <div className={styles["workspace"]}>
+          <header className={styles["topbar"]}>
+            <div className={styles["mobile-brand"]}>
               M<span>·</span>S <small>SPA / INVENTORY</small>
             </div>
-            <div className="topbar-right">
-              <span className="topbar-caption">Объект управления</span>
-              <label className="visually-hidden" htmlFor="global-location">
+            <div className={styles["topbar-right"]}>
+              <span className={styles["topbar-caption"]}>
+                Объект управления
+              </span>
+              <label
+                className={ui["visually-hidden"]}
+                htmlFor="global-location"
+              >
                 Выбрать объект
               </label>
               <select
                 id="global-location"
-                className="location-select"
+                className={styles["location-select"]}
                 value={location}
                 onChange={(event) => setSelected(event.target.value)}
               >
@@ -113,14 +123,16 @@ function AppContent() {
               </select>
             </div>
           </header>
-          <nav className="mobile-nav" aria-label="Основная навигация">
+          <nav className={styles["mobile-nav"]} aria-label="Основная навигация">
             {nav.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.to === "/"}
                 className={({ isActive }) =>
-                  `mobile-link ${isActive ? "active" : ""}`
+                  [styles["mobile-link"], isActive && styles["active"]]
+                    .filter(Boolean)
+                    .join(" ")
                 }
               >
                 <span aria-hidden="true">{item.icon}</span>
@@ -128,7 +140,7 @@ function AppContent() {
               </NavLink>
             ))}
           </nav>
-          <main id="content" className="content">
+          <main id="content" className={styles["content"]}>
             <Routes>
               <Route path="/" element={<DashboardPage />} />
               <Route

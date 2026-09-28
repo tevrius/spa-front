@@ -1,3 +1,5 @@
+import styles from "./ChatPage.module.css";
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "../app/App";
@@ -67,18 +69,18 @@ function Answer({
         .slice(0, 8)
     : [];
   return (
-    <div className="answer">
-      <div className="question-bubble">{item.question}</div>
-      <div className="answer-card">
-        <div className="answer-meta">
-          <span className="assistant-mark">✳</span>
+    <div className={styles["answer"]}>
+      <div className={styles["question-bubble"]}>{item.question}</div>
+      <div className={styles["answer-card"]}>
+        <div className={styles["answer-meta"]}>
+          <span className={styles["assistant-mark"]}>✳</span>
           <strong>Помощник по закупкам</strong>
           <small>{date(item.created_at)}</small>
         </div>
-        <p className="answer-text">{item.answer}</p>
+        <p className={styles["answer-text"]}>{item.answer}</p>
         <Warnings items={item.warnings} />
         {item.table && (
-          <Panel title={item.table.title} className="embedded-panel">
+          <Panel title={item.table.title} className={styles["embedded-panel"]}>
             <DataTable headers={item.table.columns}>
               {item.table.rows.map((row, i) => (
                 <tr key={i}>
@@ -91,9 +93,9 @@ function Answer({
           </Panel>
         )}
         {item.calculation && Object.keys(item.calculation).length > 0 && (
-          <Panel title="Данные расчёта" className="embedded-panel">
+          <Panel title="Данные расчёта" className={styles["embedded-panel"]}>
             {highlights.length > 0 && (
-              <dl className="metrics-dl">
+              <dl className={ui["metrics-dl"]}>
                 {highlights.map(([key, value]) => (
                   <div key={key}>
                     <dt>{calculationLabels[key]}</dt>
@@ -107,7 +109,7 @@ function Answer({
                 ))}
               </dl>
             )}
-            <details className="raw-details">
+            <details className={styles["raw-details"]}>
               <summary>Полный ответ расчётного модуля</summary>
               <pre>{JSON.stringify(item.calculation, null, 2)}</pre>
             </details>
@@ -115,7 +117,7 @@ function Answer({
         )}
         <ExplanationBlock value={item.explanation} />
         {item.follow_up.length > 0 && (
-          <div className="follow-ups">
+          <div className={styles["follow-ups"]}>
             <span>Уточнить вопрос</span>
             {item.follow_up.map((question) => (
               <button
@@ -178,19 +180,23 @@ export function ChatPage() {
         title="Спросите о закупках"
         description="Задайте вопрос обычным языком. В ответе будут рекомендации, расчёт и данные, на которых он основан."
       />
-      <div className="chat-layout">
-        <aside className="chat-history">
+      <div className={styles["chat-layout"]}>
+        <aside className={styles["chat-history"]}>
           <Panel title="История вопросов" eyebrow="ТЕКУЩАЯ СЕССИЯ">
             {history.isPending ? (
               <Loading />
             ) : history.isError ? (
               <Failure error={history.error} retry={() => history.refetch()} />
             ) : history.data.length ? (
-              <div className="history-list">
+              <div className={styles["history-list"]}>
                 {history.data.map((item) => (
                   <button
                     key={item.message_id}
-                    className={selectedId === item.message_id ? "selected" : ""}
+                    className={
+                      selectedId === item.message_id
+                        ? styles["selected"]
+                        : undefined
+                    }
                     onClick={() => {
                       setSelectedId(item.message_id);
                       setLatest(null);
@@ -206,7 +212,7 @@ export function ChatPage() {
             )}
           </Panel>
         </aside>
-        <div className="chat-main">
+        <div className={styles["chat-main"]}>
           {selected.isPending && selectedId ? (
             <Loading />
           ) : selected.isError ? (
@@ -214,14 +220,14 @@ export function ChatPage() {
           ) : visible ? (
             <Answer item={visible} onFollowUp={ask} />
           ) : (
-            <Panel className="chat-welcome">
-              <div className="welcome-icon">✳</div>
+            <Panel className={styles["chat-welcome"]}>
+              <div className={styles["welcome-icon"]}>✳</div>
               <h2>С чего начнём?</h2>
               <p>
                 Помогу оценить остатки, рассчитать закупку, разобрать риски и
                 составить бюджет.
               </p>
-              <div className="example-grid">
+              <div className={styles["example-grid"]}>
                 {examples.isPending ? (
                   <Loading />
                 ) : examples.isError ? (
@@ -242,7 +248,7 @@ export function ChatPage() {
           )}
           {visible?.intent === "help" && examples.data && (
             <Panel title="Примеры вопросов">
-              <div className="example-grid">
+              <div className={styles["example-grid"]}>
                 {examples.data.slice(0, 8).map((question) => (
                   <button key={question} onClick={() => ask(question)}>
                     {question}
@@ -262,7 +268,7 @@ export function ChatPage() {
             />
           )}
           <form
-            className="chat-composer"
+            className={styles["chat-composer"]}
             onSubmit={(event) => {
               event.preventDefault();
               ask(input);
@@ -277,10 +283,10 @@ export function ChatPage() {
                 onChange={(event) => setLimitInput(event.target.value)}
               />
             </Field>
-            <label className="visually-hidden" htmlFor="chat-question">
+            <label className={ui["visually-hidden"]} htmlFor="chat-question">
               Вопрос помощнику
             </label>
-            <div className="composer-row">
+            <div className={styles["composer-row"]}>
               <textarea
                 id="chat-question"
                 rows={2}
@@ -295,7 +301,7 @@ export function ChatPage() {
                 }}
               />
               <button
-                className="button primary"
+                className={[ui["button"], ui["primary"]].join(" ")}
                 type="submit"
                 disabled={
                   !input.trim() ||

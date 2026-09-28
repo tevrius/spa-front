@@ -1,0 +1,60 @@
+.alert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.alert-card {
+  background: #fff;
+  border: 1px solid #e3eae0;
+  border-left: 4px solid #b6c5b9;
+  border-radius: 12px;
+  padding: 22px;
+  min-width: 0;
+}
+.alert-card.alert-critical {
+  border-left-color: #cd6856;
+}
+.alert-card.alert-warning {
+  border-left-color: #d4a65a;
+}
+.alert-card.alert-info {
+  border-left-color: #7aa894;
+}
+.alert-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #91a096;
+  font-size: 0.72rem;
+}
+.alert-card h2 {
+  margin: 16px 0 8px;
+}
+.alert-card p {
+  color: #5d7064;
+  font-size: 0.81rem;
+  margin-bottom: 12px;
+}
+.alert-meta {
+  color: #91a096;
+  font-size: 0.7rem;
+}
+.recommendation {
+  border-top: 1px solid #e9eee8;
+  padding-top: 12px;
+  margin: 15px 0;
+  color: #315f48;
+}
+.recommendation strong {
+  font-size: 0.73rem;
+}
+.recommendation p {
+  margin: 5px 0 0;
+  color: #436a52;
+}
+@media (max-width: 760px) {
+  .alert-grid {
+    grid-template-columns: 1fr;
+  }
+}

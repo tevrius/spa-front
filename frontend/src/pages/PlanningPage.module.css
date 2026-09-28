@@ -1,0 +1,137 @@
+div.planning-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  max-width: 520px;
+}
+.planning-filters > label {
+  min-width: 0;
+}
+.planning-filters input,
+.planning-filters select {
+  width: 100%;
+}
+div.planning-metrics {
+  gap: 20px;
+}
+div.planning-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.planning-grid > section {
+  height: auto;
+  margin-bottom: 0;
+}
+.bar-chart {
+  display: grid;
+  gap: 15px;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 105px;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.76rem;
+}
+.bar-row > span {
+  color: #687a6d;
+}
+.bar-row strong {
+  text-align: right;
+  color: #335b47;
+  font-size: 0.72rem;
+}
+.bar-track {
+  background: #eef4eb;
+  border-radius: 10px;
+  height: 14px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4d8e6c, #99bf8f);
+  border-radius: 10px;
+}
+.chart-note {
+  color: #93a097;
+  font-size: 0.68rem;
+  margin: 18px 0 0;
+}
+.budget-compare {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  border-bottom: 1px solid #e9eee8;
+  padding-bottom: 17px;
+  font-size: 0.8rem;
+  color: #77897b;
+}
+.budget-compare strong {
+  color: #2d5440;
+}
+.drivers > div {
+  border-bottom: 1px solid #eef1ec;
+  padding: 13px 0;
+}
+.drivers > div:last-child {
+  border-bottom: 0;
+}
+.drivers > div > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.78rem;
+}
+.drivers b {
+  color: #426b51;
+}
+.drivers p {
+  font-size: 0.69rem;
+  color: #829288;
+  margin: 5px 0 0;
+}
+.breakdown {
+  display: grid;
+  gap: 2px;
+}
+.breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #edf1eb;
+  padding: 9px 0;
+  font-size: 0.78rem;
+}
+.breakdown > div:last-child {
+  border: 0;
+}
+.breakdown span {
+  color: #687f6d;
+}
+.breakdown strong {
+  white-space: nowrap;
+  color: #2d5944;
+}
+@media (max-width: 1000px) {
+  div.planning-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  div.planning-metrics {
+    gap: 12px;
+  }
+  .bar-row {
+    grid-template-columns: 64px 1fr 78px;
+    font-size: 0.68rem;
+  }
+  .bar-row strong {
+    font-size: 0.63rem;
+  }
+}
+@media (max-width: 400px) {
+  div.planning-filters {
+    grid-template-columns: 1fr;
+  }
+}

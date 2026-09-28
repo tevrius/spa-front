@@ -1,3 +1,5 @@
+import styles from "./EconomicsPage.module.css";
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "../shared/api";
@@ -52,10 +54,10 @@ export function EconomicsPage() {
         title="Экономика услуг"
         description="Закупочные цены и себестоимость услуг по сети SPA. Mock API не разделяет эти расчёты по объектам."
       />
-      <div className="two-col economics-grid">
-        <div className="column-stack">
+      <div className={[ui["two-col"], styles["economics-grid"]].join(" ")}>
+        <div className={styles["column-stack"]}>
           <Panel title="Динамика закупочной цены" eyebrow="ПОЗИЦИЯ И ПОСТАВЩИК">
-            <div className="filters">
+            <div className={ui["filters"]}>
               <Field label="Товар">
                 <select
                   value={sku}
@@ -101,7 +103,7 @@ export function EconomicsPage() {
             />
           ) : (
             <>
-              <div className="metric-grid compact">
+              <div className={[ui["metric-grid"], ui["compact"]].join(" ")}>
                 <Metric
                   label="Базовая цена"
                   value={money(priceQuery.data.base_avg_price)}
@@ -148,9 +150,9 @@ export function EconomicsPage() {
             </>
           )}
         </div>
-        <div className="column-stack">
+        <div className={styles["column-stack"]}>
           <Panel title="Себестоимость услуги" eyebrow="ПРОЦЕДУРА И СЦЕНАРИЙ">
-            <div className="filters">
+            <div className={ui["filters"]}>
               <Field label="Услуга">
                 <select
                   value={serviceId}
@@ -179,7 +181,7 @@ export function EconomicsPage() {
             />
           ) : (
             <>
-              <div className="metric-grid compact">
+              <div className={[ui["metric-grid"], ui["compact"]].join(" ")}>
                 <Metric
                   label="Себестоимость"
                   value={money(costQuery.data.current_total_cost)}
@@ -228,7 +230,7 @@ export function EconomicsPage() {
                       });
                   }}
                 >
-                  <div className="filters">
+                  <div className={ui["filters"]}>
                     <Field label="Изменение закупочных цен, %">
                       <input
                         type="number"
@@ -238,7 +240,7 @@ export function EconomicsPage() {
                       />
                     </Field>
                     <button
-                      className="button primary"
+                      className={[ui["button"], ui["primary"]].join(" ")}
                       type="submit"
                       disabled={
                         simulation.isPending ||
@@ -269,7 +271,7 @@ export function EconomicsPage() {
                   />
                 )}
                 {simulation.data && (
-                  <div className="sim-result">
+                  <div className={styles["sim-result"]}>
                     <Metric
                       label="Маржа в сценарии"
                       value={money(simulation.data.current_margin_rub)}

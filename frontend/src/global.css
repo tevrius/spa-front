@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  font-family: "DM Sans", Arial, sans-serif;
+  color: #223b35;
+  background: #f5f7f3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: Manrope, Arial, sans-serif;
+}
+h1 {
+  font-size: clamp(2rem, 3.1vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+}
+h2 {
+  font-size: 1.13rem;
+  letter-spacing: -0.02em;
+}
+h3 {
+  font-size: 0.9rem;
+}
+p {
+  line-height: 1.55;
+}
+strong,
+b {
+  font-weight: 700;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #b2a35f;
+  outline-offset: 2px;
+}
+textarea {
+  min-height: 39px;
+  border: 1px solid #dce6dc;
+  border-radius: 9px;
+  background: #fbfcfa;
+  color: #244438;
+  padding: 9px 11px;
+  outline: none;
+}
+textarea:focus {
+  border-color: #579974;
+}

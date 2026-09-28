@@ -1,0 +1,77 @@
+.hero-band {
+  border-radius: 15px;
+  background: linear-gradient(115deg, #1b5c47, #2a7459 65%, #478a68);
+  color: #fff;
+  padding: 26px 30px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.hero-band strong {
+  display: block;
+  font-family: Manrope, sans-serif;
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  letter-spacing: -0.03em;
+  margin: 7px 0;
+}
+.hero-band p {
+  color: #cce3d0;
+  font-size: 0.8rem;
+  margin: 0;
+}
+.hero-kicker {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #d8ca8e;
+}
+.list-stack {
+  display: grid;
+}
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid #edf1eb;
+}
+.list-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.list-row:last-child {
+  padding-bottom: 0;
+}
+.list-row > div {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+}
+.list-row strong {
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+.list-row small {
+  font-size: 0.71rem;
+  color: #849288;
+}
+.list-row b {
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.row-arrow {
+  color: #7c9d83;
+  font-size: 1.2rem;
+}
+@media (max-width: 760px) {
+  .hero-band {
+    display: block;
+    padding: 21px;
+  }
+  .hero-band a {
+    margin-top: 17px;
+  }
+}

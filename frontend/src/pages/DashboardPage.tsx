@@ -1,3 +1,5 @@
+import styles from "./DashboardPage.module.css";
+import ui from "../shared/ui.module.css";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "../app/App";
@@ -30,14 +32,17 @@ export function DashboardPage() {
         title="Склад под контролем"
         description="Сначала — позиции, где промедление может остановить процедуры. Затем — план закупок и состояние запасов."
         action={
-          <Link className="button primary" to="/reorder">
+          <Link
+            className={[ui["button"], ui["primary"]].join(" ")}
+            to="/reorder"
+          >
             Что заказать →
           </Link>
         }
       />
-      <div className="hero-band">
+      <div className={styles["hero-band"]}>
         <div>
-          <span className="hero-kicker">ТРЕБУЕТ ВНИМАНИЯ</span>
+          <span className={styles["hero-kicker"]}>ТРЕБУЕТ ВНИМАНИЯ</span>
           <strong>
             {plural(
               kpi.positions_below_reorder_point,
@@ -58,11 +63,11 @@ export function DashboardPage() {
             истекающим сроком
           </p>
         </div>
-        <Link to="/alerts" className="button light">
+        <Link to="/alerts" className={[ui["button"], ui["light"]].join(" ")}>
           Разобрать риски →
         </Link>
       </div>
-      <div className="metric-grid dashboard-metrics">
+      <div className={ui["metric-grid"]}>
         <Metric
           label="Стоимость запасов"
           value={money(kpi.stock_value)}
@@ -84,22 +89,22 @@ export function DashboardPage() {
           note={`${number(kpi.sku_count)} позиций на складе`}
         />
       </div>
-      <div className="two-col">
+      <div className={ui["two-col"]}>
         <Panel
           title="Главные риски"
           eyebrow="ЧТО ВАЖНО СЕГОДНЯ"
           action={
-            <Link to="/alerts" className="text-link">
+            <Link to="/alerts" className={ui["text-link"]}>
               Все риски →
             </Link>
           }
         >
           {top_alerts.length ? (
-            <div className="list-stack">
+            <div className={styles["list-stack"]}>
               {top_alerts.slice(0, 5).map((alert) => (
                 <Link
                   to={`/stock/${alert.sku}`}
-                  className="list-row"
+                  className={styles["list-row"]}
                   key={alert.alert_id}
                 >
                   <div>
@@ -109,7 +114,7 @@ export function DashboardPage() {
                       {alert.name} · {alert.location_name}
                     </small>
                   </div>
-                  <span className="row-arrow">↗</span>
+                  <span className={styles["row-arrow"]}>↗</span>
                 </Link>
               ))}
             </div>
@@ -121,17 +126,17 @@ export function DashboardPage() {
           title="Ближайшие заказы"
           eyebrow="ПЛАН НА 14 ДНЕЙ"
           action={
-            <Link to="/reorder" className="text-link">
+            <Link to="/reorder" className={ui["text-link"]}>
               Весь список →
             </Link>
           }
         >
           {next_orders.length ? (
-            <div className="list-stack">
+            <div className={styles["list-stack"]}>
               {next_orders.slice(0, 5).map((item) => (
                 <Link
                   to={`/forecast?sku=${item.sku}`}
-                  className="list-row"
+                  className={styles["list-row"]}
                   key={`${item.location}-${item.sku}`}
                 >
                   <div>

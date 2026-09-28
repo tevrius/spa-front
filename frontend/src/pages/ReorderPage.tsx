@@ -1,3 +1,4 @@
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -34,7 +35,7 @@ export function ReorderPage() {
         action={
           query.data && (
             <button
-              className="button secondary"
+              className={[ui["button"], ui["secondary"]].join(" ")}
               type="button"
               onClick={() =>
                 downloadJson(`reorder-${location}-${horizon}d.json`, query.data)
@@ -45,8 +46,8 @@ export function ReorderPage() {
           )
         }
       />
-      <Panel className="filter-panel">
-        <div className="filters">
+      <Panel className={ui["filter-panel"]}>
+        <div className={ui["filters"]}>
           <Field label="Горизонт планирования">
             <select
               value={horizon}
@@ -66,7 +67,7 @@ export function ReorderPage() {
         <Failure error={query.error} retry={() => query.refetch()} />
       ) : (
         <>
-          <div className="metric-grid compact">
+          <div className={[ui["metric-grid"], ui["compact"]].join(" ")}>
             <Metric
               label="Итого к заказу"
               value={money(query.data.total_cost)}
@@ -96,12 +97,12 @@ export function ReorderPage() {
                       <td>
                         <Status kind={item.priority} />
                         <Link
-                          className="table-title"
+                          className={ui["table-title"]}
                           to={`/forecast?sku=${item.sku}`}
                         >
                           {item.name}
                         </Link>
-                        <span className="table-sub">
+                        <span className={ui["table-sub"]}>
                           {item.supplier_name} · поставка {item.lead_time_days}{" "}
                           дн.
                         </span>

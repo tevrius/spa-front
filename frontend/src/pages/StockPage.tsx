@@ -1,3 +1,4 @@
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -31,8 +32,8 @@ export function StockPage({ categories }: { categories: string[] }) {
         title="Состояние запасов"
         description="Остатки, запас в днях и сроки годности по выбранному объекту."
       />
-      <Panel className="filter-panel">
-        <div className="filters">
+      <Panel className={ui["filter-panel"]}>
+        <div className={ui["filters"]}>
           <Field label="Категория">
             <select
               value={category}
@@ -44,7 +45,7 @@ export function StockPage({ categories }: { categories: string[] }) {
               ))}
             </select>
           </Field>
-          <label className="check-field">
+          <label className={ui["check-field"]}>
             <input
               type="checkbox"
               checked={belowMin}
@@ -76,10 +77,10 @@ export function StockPage({ categories }: { categories: string[] }) {
             {query.data.map((item) => (
               <tr key={`${item.location}-${item.sku}`}>
                 <td>
-                  <Link className="table-title" to={`/stock/${item.sku}`}>
+                  <Link className={ui["table-title"]} to={`/stock/${item.sku}`}>
                     {item.name}
                   </Link>
-                  <span className="table-sub">
+                  <span className={ui["table-sub"]}>
                     {item.sku} · {item.category}
                   </span>
                 </td>
@@ -137,7 +138,7 @@ export function ProductPage() {
   const item = stock.data;
   return (
     <>
-      <Link to="/stock" className="back-link">
+      <Link to="/stock" className={ui["back-link"]}>
         ← Все остатки
       </Link>
       <PageHeading
@@ -145,7 +146,10 @@ export function ProductPage() {
         title={product.data.name}
         description={`Условия хранения: ${product.data.storage}. Поставщик: ${product.data.default_supplier_id}. Срок поставки: ${product.data.lead_time_days} дн.`}
         action={
-          <Link className="button primary" to={`/forecast?sku=${sku}`}>
+          <Link
+            className={[ui["button"], ui["primary"]].join(" ")}
+            to={`/forecast?sku=${sku}`}
+          >
             Рассчитать закупку →
           </Link>
         }
@@ -157,7 +161,7 @@ export function ProductPage() {
       ) : !item ? (
         <Empty>Нет остатков по выбранному объекту.</Empty>
       ) : (
-        <div className="metric-grid">
+        <div className={ui["metric-grid"]}>
           <Metric
             label="Остаток"
             value={`${number(item.qty)} ${item.unit}`}
@@ -184,7 +188,7 @@ export function ProductPage() {
           />
         </div>
       )}
-      <div className="two-col">
+      <div className={ui["two-col"]}>
         <Panel title="Партии" eyebrow="СРОКИ ГОДНОСТИ">
           {batches.isPending ? (
             <Loading />
@@ -196,7 +200,7 @@ export function ProductPage() {
                 <tr key={batch.batch_id}>
                   <td>
                     <strong>{batch.batch_id}</strong>
-                    <span className="table-sub">{batch.invoice_no}</span>
+                    <span className={ui["table-sub"]}>{batch.invoice_no}</span>
                   </td>
                   <td>
                     {number(batch.qty)} {batch.unit}
@@ -250,9 +254,9 @@ export function ProductPage() {
                   </tr>
                 ))}
               </DataTable>
-              <div className="pagination">
+              <div className={ui["pagination"]}>
                 <button
-                  className="button secondary"
+                  className={[ui["button"], ui["secondary"]].join(" ")}
                   disabled={offset === 0}
                   onClick={() => setOffset(Math.max(0, offset - 10))}
                 >
@@ -263,7 +267,7 @@ export function ProductPage() {
                   {movements.data.total}
                 </span>
                 <button
-                  className="button secondary"
+                  className={[ui["button"], ui["secondary"]].join(" ")}
                   disabled={offset + 10 >= movements.data.total}
                   onClick={() => setOffset(offset + 10)}
                 >

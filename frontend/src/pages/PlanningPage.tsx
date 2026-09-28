@@ -1,3 +1,5 @@
+import styles from "./PlanningPage.module.css";
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "../app/App";
@@ -22,7 +24,7 @@ function Breakdown({ title, groups }: { title: string; groups: PlanGroup[] }) {
   return (
     <Panel title={title}>
       {groups.length ? (
-        <div className="breakdown">
+        <div className={styles["breakdown"]}>
           {groups.map((group) => (
             <div key={group.key}>
               <span>{group.label}</span>
@@ -68,7 +70,7 @@ export function PlanningPage() {
           plan.data &&
           budget.data && (
             <button
-              className="button secondary"
+              className={[ui["button"], ui["secondary"]].join(" ")}
               type="button"
               onClick={() =>
                 downloadJson(`purchase-plan-${location}-${period}.json`, {
@@ -82,8 +84,8 @@ export function PlanningPage() {
           )
         }
       />
-      <Panel title="Параметры плана" className="filter-panel">
-        <div className="filters planning-filters">
+      <Panel title="Параметры плана" className={ui["filter-panel"]}>
+        <div className={[ui["filters"], styles["planning-filters"]].join(" ")}>
           <Field label="Период">
             <select
               value={period}
@@ -107,7 +109,7 @@ export function PlanningPage() {
           </Field>
         </div>
         {!valid && (
-          <p className="form-error">Лимит должен быть неотрицательным.</p>
+          <p className={ui["form-error"]}>Лимит должен быть неотрицательным.</p>
         )}
       </Panel>
       {!valid ? null : plan.isPending || budget.isPending ? (
@@ -118,7 +120,13 @@ export function PlanningPage() {
         <Failure error={budget.error} retry={() => budget.refetch()} />
       ) : (
         <>
-          <div className="metric-grid compact planning-metrics">
+          <div
+            className={[
+              ui["metric-grid"],
+              ui["compact"],
+              styles["planning-metrics"],
+            ].join(" ")}
+          >
             <Metric
               label="План закупок"
               value={money(plan.data.total_cost)}
@@ -146,28 +154,28 @@ export function PlanningPage() {
           </div>
           <Warnings items={[...plan.data.warnings, ...budget.data.warnings]} />
           {plan.data.over_limit_by != null && plan.data.over_limit_by > 0 && (
-            <div className="notice notice-warning">
+            <div className={[ui["notice"], ui["notice-warning"]].join(" ")}>
               <strong>Выше лимита на {money(plan.data.over_limit_by)}</strong>
               <span>Проверьте приоритеты позиций в плане.</span>
             </div>
           )}
-          <div className="two-col planning-grid">
+          <div className={[ui["two-col"], styles["planning-grid"]].join(" ")}>
             <Panel
               title="Бюджет по месяцам"
               eyebrow={`${date(budget.data.period_from)} — ${date(budget.data.period_to)}`}
             >
               {budget.data.by_month.length ? (
                 <div
-                  className="bar-chart"
+                  className={styles["bar-chart"]}
                   role="group"
                   aria-label="Бюджет закупок по месяцам"
                 >
                   {budget.data.by_month.map((item) => (
-                    <div className="bar-row" key={item.key}>
+                    <div className={styles["bar-row"]} key={item.key}>
                       <span>{item.label}</span>
-                      <div className="bar-track" aria-hidden="true">
+                      <div className={styles["bar-track"]} aria-hidden="true">
                         <div
-                          className="bar-fill"
+                          className={styles["bar-fill"]}
                           style={{ width: `${(item.cost / maxMonth) * 100}%` }}
                         />
                       </div>
@@ -178,7 +186,7 @@ export function PlanningPage() {
               ) : (
                 <Empty />
               )}
-              <p className="chart-note">
+              <p className={styles["chart-note"]}>
                 Суммы и разбивка получены из API. Шкала показывает долю от
                 максимального месяца.
               </p>
@@ -187,7 +195,7 @@ export function PlanningPage() {
               title="Почему бюджет изменился"
               eyebrow="СРАВНЕНИЕ С ПРЕДЫДУЩИМ ПЕРИОДОМ"
             >
-              <div className="budget-compare">
+              <div className={styles["budget-compare"]}>
                 <span>Предыдущий период</span>
                 <strong>{money(budget.data.previous_period_cost)}</strong>
                 <span>Изменение</span>
@@ -197,7 +205,7 @@ export function PlanningPage() {
                 </strong>
               </div>
               {budget.data.drivers.length ? (
-                <div className="drivers">
+                <div className={styles["drivers"]}>
                   {budget.data.drivers.map((driver) => (
                     <div key={driver.driver}>
                       <div>
@@ -215,11 +223,11 @@ export function PlanningPage() {
               )}
             </Panel>
           </div>
-          <div className="two-col planning-grid">
+          <div className={[ui["two-col"], styles["planning-grid"]].join(" ")}>
             <Breakdown title="По категориям" groups={plan.data.by_category} />
             <Breakdown title="По объектам" groups={plan.data.by_location} />
           </div>
-          <div className="two-col planning-grid">
+          <div className={[ui["two-col"], styles["planning-grid"]].join(" ")}>
             <Breakdown title="По месяцам" groups={plan.data.by_month} />
             <Breakdown title="По товарам" groups={plan.data.by_product} />
           </div>
@@ -243,7 +251,7 @@ export function PlanningPage() {
                     <td>{item.month}</td>
                     <td>
                       <strong>{item.name}</strong>
-                      <span className="table-sub">{item.sku}</span>
+                      <span className={ui["table-sub"]}>{item.sku}</span>
                     </td>
                     <td>{item.category}</td>
                     <td>{item.location}</td>

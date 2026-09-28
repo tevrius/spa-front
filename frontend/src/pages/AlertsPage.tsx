@@ -1,3 +1,5 @@
+import styles from "./AlertsPage.module.css";
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -64,8 +66,8 @@ export function AlertsPage({ alertTypes }: { alertTypes: string[] }) {
         title="Риски и рекомендации"
         description="Приоритеты для управляющего: что может закончиться, испортиться или подорожать."
       />
-      <Panel className="filter-panel">
-        <div className="filters">
+      <Panel className={ui["filter-panel"]}>
+        <div className={ui["filters"]}>
           <Field label="Тип риска">
             <select
               value={type}
@@ -97,23 +99,28 @@ export function AlertsPage({ alertTypes }: { alertTypes: string[] }) {
       ) : query.isError ? (
         <Failure error={query.error} retry={() => query.refetch()} />
       ) : query.data.length ? (
-        <div className="alert-grid">
+        <div className={styles["alert-grid"]}>
           {query.data.map((alert) => (
             <article
-              className={`alert-card alert-${alert.severity}`}
+              className={[
+                styles["alert-card"],
+                styles[`alert-${alert.severity}`],
+              ]
+                .filter(Boolean)
+                .join(" ")}
               key={alert.alert_id}
             >
-              <div className="alert-top">
+              <div className={styles["alert-top"]}>
                 <Status kind={alert.severity} />
                 <span>{alertNames[alert.type] || alert.type}</span>
               </div>
               <h2>{alert.title}</h2>
               <p>{alert.message}</p>
-              <div className="alert-meta">
+              <div className={styles["alert-meta"]}>
                 {alert.name} · {alert.location_name} · {date(alert.as_of)}
               </div>
               {Object.keys(alert.metrics).length > 0 && (
-                <dl className="metrics-dl">
+                <dl className={ui["metrics-dl"]}>
                   {Object.entries(alert.metrics).map(([key, value]) => (
                     <div key={key}>
                       <dt>{metricNames[key] || key.replaceAll("_", " ")}</dt>
@@ -122,11 +129,11 @@ export function AlertsPage({ alertTypes }: { alertTypes: string[] }) {
                   ))}
                 </dl>
               )}
-              <div className="recommendation">
+              <div className={styles["recommendation"]}>
                 <strong>Что сделать</strong>
                 <p>{alert.recommendation}</p>
               </div>
-              <Link to={`/stock/${alert.sku}`} className="text-link">
+              <Link to={`/stock/${alert.sku}`} className={ui["text-link"]}>
                 Карточка позиции →
               </Link>
             </article>

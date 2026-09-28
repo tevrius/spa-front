@@ -17,7 +17,7 @@ React + TypeScript + Vite приложение для управляющего �
 
 - React 19, TypeScript 6, Vite 8;
 - React Router 7 и TanStack Query 5;
-- CSS, Vitest, Prettier.
+- CSS Modules, Vitest, Prettier.
 
 ## Запуск
 
@@ -68,6 +68,7 @@ Dev-сервер передаёт запросы `/api` отдельно зап�
 - `src/shared/types.ts` — типы ответов API;
 - `src/shared/ui.tsx` — общие компоненты состояний, таблиц и обоснования расчётов;
 - `src/shared/format.ts` и `src/shared/export.ts` — форматирование и выгрузка JSON.
+- `src/global.css` — базовая типографика и сброс стилей; `*.module.css` рядом с компонентами и страницами — их оформление.
 
 TanStack Query хранит серверные данные и разделяет кеш по параметрам запроса. Показатели закупок и бюджета frontend не рассчитывает: он отображает значения из API. Для запросов предусмотрены состояния загрузки, ошибки и пустого результата. Тесты API-клиента находятся в `src/shared/api.test.ts`.
 

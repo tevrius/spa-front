@@ -1,3 +1,4 @@
+import styles from "./ui.module.css";
 import type { ReactNode } from "react";
 import { date, severityNames } from "./format";
 import type { ApiWarning, Explanation } from "./types";
@@ -16,11 +17,11 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`panel ${className}`}>
+    <section className={[styles["panel"], className].filter(Boolean).join(" ")}>
       {(title || eyebrow || action) && (
-        <header className="panel-heading">
+        <header className={styles["panel-heading"]}>
           <div>
-            {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+            {eyebrow && <p className={styles["eyebrow"]}>{eyebrow}</p>}
             {title && <h2>{title}</h2>}
           </div>
           {action}
@@ -43,9 +44,9 @@ export function PageHeading({
   action?: ReactNode;
 }) {
   return (
-    <div className="page-heading">
+    <div className={styles["page-heading"]}>
       <div>
-        <p className="eyebrow">{eyebrow}</p>
+        <p className={styles["eyebrow"]}>{eyebrow}</p>
         <h1>{title}</h1>
         <p>{description}</p>
       </div>
@@ -62,7 +63,11 @@ export function Status({
   children?: ReactNode;
 }) {
   return (
-    <span className={`status status-${kind}`}>
+    <span
+      className={[styles["status"], styles[`status-${kind}`]]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {children ?? severityNames[kind] ?? kind}
     </span>
   );
@@ -70,8 +75,8 @@ export function Status({
 
 export function Loading({ label = "Загружаем данные…" }: { label?: string }) {
   return (
-    <div className="state" role="status">
-      <span className="spinner" />
+    <div className={styles["state"]} role="status">
+      <span className={styles["spinner"]} />
       {label}
     </div>
   );
@@ -81,7 +86,11 @@ export function Empty({
 }: {
   children?: ReactNode;
 }) {
-  return <div className="state empty">{children}</div>;
+  return (
+    <div className={[styles["state"], styles["empty"]].join(" ")}>
+      {children}
+    </div>
+  );
 }
 export function Failure({
   error,
@@ -91,11 +100,17 @@ export function Failure({
   retry?: () => void;
 }) {
   return (
-    <div className="state failure" role="alert">
+    <div
+      className={[styles["state"], styles["failure"]].join(" ")}
+      role="alert"
+    >
       <strong>Не удалось получить данные</strong>
       <span>{error?.message || "Проверьте соединение с API."}</span>
       {retry && (
-        <button className="button secondary" onClick={retry}>
+        <button
+          className={[styles["button"], styles["secondary"]].join(" ")}
+          onClick={retry}
+        >
           Повторить
         </button>
       )}
@@ -106,10 +121,12 @@ export function Failure({
 export function Warnings({ items }: { items: ApiWarning[] }) {
   if (!items.length) return null;
   return (
-    <div className="warnings">
+    <div className={styles["warnings"]}>
       {items.map((item, index) => (
         <div
-          className={`notice notice-${item.level}`}
+          className={[styles["notice"], styles[`notice-${item.level}`]]
+            .filter(Boolean)
+            .join(" ")}
           key={`${item.message}-${index}`}
         >
           <strong>{severityNames[item.level]}</strong>
@@ -130,10 +147,10 @@ export function ExplanationBlock({
     <Panel
       title="Как получен результат"
       eyebrow={`Актуально на ${date(value.as_of)}`}
-      className="explanation"
+      className={styles["explanation"]}
     >
-      <p className="muted">Период расчёта: {value.period}</p>
-      <div className="explanation-grid">
+      <p className={styles["muted"]}>Период расчёта: {value.period}</p>
+      <div className={styles["explanation-grid"]}>
         <div>
           <h3>Исходные данные</h3>
           <ul>
@@ -175,7 +192,11 @@ export function Metric({
   tone?: string;
 }) {
   return (
-    <div className={`metric ${tone ? `metric-${tone}` : ""}`}>
+    <div
+      className={[styles["metric"], tone && styles[`metric-${tone}`]]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <span>{label}</span>
       <strong>{value}</strong>
       {note && <small>{note}</small>}
@@ -191,7 +212,7 @@ export function Field({
   children: ReactNode;
 }) {
   return (
-    <label className="field">
+    <label className={styles["field"]}>
       <span>{label}</span>
       {children}
     </label>
@@ -206,7 +227,7 @@ export function DataTable({
   children: ReactNode;
 }) {
   return (
-    <div className="table-scroll">
+    <div className={styles["table-scroll"]}>
       <table>
         <thead>
           <tr>

@@ -1,3 +1,5 @@
+import styles from "./ForecastPage.module.css";
+import ui from "../shared/ui.module.css";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -63,7 +65,7 @@ export function ForecastPage() {
         title="Параметры расчёта"
         eyebrow="ИЗМЕНИТЕ УСЛОВИЯ — РЕЗУЛЬТАТ ОБНОВИТСЯ"
       >
-        <div className="filters four">
+        <div className={[ui["filters"], ui["four"]].join(" ")}>
           <Field label="Позиция">
             <select
               value={sku}
@@ -109,7 +111,7 @@ export function ForecastPage() {
           </Field>
         </div>
         {!validInputs && (
-          <p className="form-error">
+          <p className={ui["form-error"]}>
             Проверьте страховой запас и лимит бюджета.
           </p>
         )}
@@ -126,9 +128,9 @@ export function ForecastPage() {
         <Failure error={query.error} retry={() => query.refetch()} />
       ) : (
         <>
-          <div className="result-hero">
+          <div className={styles["result-hero"]}>
             <div>
-              <p className="eyebrow">РЕКОМЕНДАЦИЯ К ЗАКУПКЕ</p>
+              <p className={ui["eyebrow"]}>РЕКОМЕНДАЦИЯ К ЗАКУПКЕ</p>
               <h2>
                 {number(query.data.recommended_purchase_qty)}{" "}
                 <span>{query.data.unit}</span>
@@ -146,7 +148,7 @@ export function ForecastPage() {
                   : "Заказ не требуется"}
               </small>
               <button
-                className="button light"
+                className={[ui["button"], ui["light"]].join(" ")}
                 type="button"
                 onClick={() =>
                   downloadJson(
@@ -161,7 +163,7 @@ export function ForecastPage() {
           </div>
           <Warnings items={query.data.warnings} />
           {query.data.within_budget === false && (
-            <div className="notice notice-warning">
+            <div className={[ui["notice"], ui["notice-warning"]].join(" ")}>
               <strong>Лимит превышен</strong>
               <span>
                 Рекомендация выше заданного бюджета. Проверьте объём и срок
@@ -169,14 +171,14 @@ export function ForecastPage() {
               </span>
             </div>
           )}
-          <div className="section-intro">
+          <div className={styles["section-intro"]}>
             <h2>Из чего сложилась рекомендация</h2>
             <p>
               Период {date(query.data.period_from)} —{" "}
               {date(query.data.period_to)} · {query.data.period_days} дней
             </p>
           </div>
-          <div className="metric-grid">
+          <div className={ui["metric-grid"]}>
             <Metric
               label="Прогнозный расход"
               value={`${number(query.data.forecast_demand)} ${query.data.unit}`}

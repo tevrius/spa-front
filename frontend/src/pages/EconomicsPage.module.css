@@ -1,0 +1,31 @@
+div.economics-grid {
+  align-items: start;
+}
+.column-stack {
+  min-width: 0;
+}
+.sim-result {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sim-result > :nth-child(n + 3) {
+  grid-column: 1/-1;
+}
+.sim-result > :nth-child(-n + 2) {
+  min-height: 105px;
+}
+.sim-result > section {
+  margin: 0;
+}
+@media (max-width: 1100px) {
+  div.economics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .sim-result {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,240 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  width: 248px;
+  height: 100vh;
+  flex: none;
+  background: #183e37;
+  color: #eff6ec;
+  padding: 29px 16px 22px;
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 11px 38px;
+}
+.brand-mark {
+  height: 42px;
+  width: 42px;
+  border: 1px solid #9ebd9e;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  font-family: Manrope, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.15em;
+  padding-right: 5px;
+  color: #f4e6bc;
+}
+.brand-mark span,
+.mobile-brand span {
+  color: #d7b56d;
+}
+.brand strong {
+  display: block;
+  font-family: Manrope, sans-serif;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.brand small {
+  display: block;
+  letter-spacing: 0.2em;
+  color: #9fbbb2;
+  font-size: 0.55rem;
+  margin-top: 2px;
+}
+.sidebar-label {
+  padding: 0 14px;
+  margin-bottom: 15px;
+  color: #8fafaa;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+}
+.sidebar nav {
+  display: grid;
+  gap: 4px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 43px;
+  padding: 0 13px;
+  border-radius: 10px;
+  color: #bcd0c8;
+  font-size: 0.89rem;
+  font-weight: 600;
+}
+.nav-link:hover,
+.nav-link.active {
+  background: #2d594b;
+  color: #fff;
+}
+.nav-link.active {
+  box-shadow: inset 3px 0 #dbc582;
+}
+.nav-icon {
+  font-size: 1.22rem;
+  width: 20px;
+  text-align: center;
+  font-weight: 400;
+  color: #d3c992;
+}
+.sidebar-foot {
+  margin-top: auto;
+  border-top: 1px solid #3a6356;
+  padding: 19px 12px 0;
+  color: #dce9dd;
+  font-size: 0.71rem;
+  line-height: 1.6;
+}
+.sidebar-foot small {
+  display: block;
+  color: #9fbbb2;
+  margin-top: 6px;
+  font-size: 0.68rem;
+}
+.online-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a9d2a0;
+  margin-right: 6px;
+}
+.workspace {
+  min-width: 0;
+  flex: 1;
+}
+.topbar {
+  height: 76px;
+  border-bottom: 1px solid #e1e8df;
+  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 clamp(20px, 3vw, 48px);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topbar-caption {
+  font-size: 0.78rem;
+  color: #83928a;
+}
+.location-select {
+  border: 1px solid #dce5db;
+  border-radius: 9px;
+  background: #f8faf7;
+  padding: 10px 36px 10px 13px;
+  color: #24453b;
+  font-weight: 700;
+  min-width: 190px;
+}
+.mobile-brand,
+.mobile-nav {
+  display: none;
+}
+.content {
+  max-width: 1600px;
+  padding: 36px clamp(20px, 3vw, 48px) 80px;
+  margin: auto;
+}
+@media (max-width: 1100px) {
+  .sidebar {
+    width: 205px;
+  }
+  .brand {
+    padding-left: 3px;
+  }
+  .sidebar-label {
+    font-size: 0.56rem;
+  }
+  .content {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+@media (max-width: 760px) {
+  .app-shell {
+    display: block;
+  }
+  .sidebar {
+    display: none;
+  }
+  .topbar {
+    height: 62px;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+  .mobile-brand {
+    display: block;
+    font-family: Manrope, sans-serif;
+    font-weight: 800;
+    color: #25503d;
+    letter-spacing: -0.09em;
+  }
+  .mobile-brand small {
+    font-size: 0.55rem;
+    letter-spacing: 0.16em;
+    margin-left: 7px;
+    color: #8b9e8d;
+  }
+  .topbar-caption {
+    display: none;
+  }
+  .location-select {
+    min-width: 0;
+    max-width: 175px;
+    padding: 8px 27px 8px 10px;
+    font-size: 0.75rem;
+  }
+  .mobile-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 8px 12px;
+    background: #fff;
+    border-bottom: 1px solid #e1e8df;
+    scrollbar-width: none;
+  }
+  .mobile-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-link {
+    flex: none;
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    color: #829789;
+    font-size: 0.63rem;
+    padding: 5px 9px;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+  .mobile-link span {
+    font-size: 1.1rem;
+  }
+  .mobile-link.active {
+    color: #216749;
+    background: #eaf4ea;
+    font-weight: 800;
+  }
+  .content {
+    padding: 26px 15px 70px;
+  }
+}
