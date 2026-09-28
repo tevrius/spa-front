@@ -23,31 +23,30 @@ React + TypeScript + Vite приложение для управляющего �
 
 Frontend запускается как самостоятельный проект. Для работы с данными отдельно запустите backend API. По умолчанию frontend ожидает его на `http://localhost:8000`.
 
+### Через Docker Compose
+
+Из директории `spa-front/frontend` выполните команду в среде с доступным Docker (на Windows — через WSL):
+
+```bash
+docker compose up
+```
+
+Откройте <http://localhost:5173>. Compose собирает и запускает только frontend. Backend должен быть запущен отдельно и доступен браузеру по `http://localhost:8000`. Если он работает на другом адресе, задайте `VITE_API_URL` при запуске Compose. Внешний порт frontend можно изменить через `FRONTEND_PORT`. После изменения исходников пересоберите образ командой `docker compose up --build`.
+
 ### Локально
 
-Нужны Node.js 24 и npm. Выполните команды из директории `spa-front/frontend`:
+Нужны Node.js 24 и npm. Из директории `spa-front/frontend`:
 
 ```bash
 npm ci
 npm run dev
 ```
 
-Откройте <http://localhost:5173>. Dev-сервер передаёт запросы `/api` отдельно запущенному backend.
-
-### Через Docker
-
-Из директории `spa-front/frontend` выполните команды в среде с доступным Docker (на Windows — через WSL):
-
-```bash
-docker build -t spa-frontend .
-docker run --rm -p 5173:5173 -e VITE_API_URL=http://localhost:8000 spa-frontend
-```
-
-Откройте <http://localhost:5173>. В этом примере браузер обращается к отдельно запущенному API по `http://localhost:8000`. Если адрес API другой, замените значение `VITE_API_URL` в команде запуска.
+Dev-сервер передаёт запросы `/api` отдельно запущенному backend.
 
 ## Настройка API
 
-Адрес API не задан в компонентах. При пустом `VITE_API_URL` запросы на `/api` идут через прокси dev-сервера Vite; его цель задаётся переменной `VITE_API_PROXY_TARGET` (по умолчанию `http://localhost:8000`). Если backend доступен по другому адресу, укажите `VITE_API_PROXY_TARGET` в `spa-front/frontend/.env.local`. Для прямых запросов из браузера задайте `VITE_API_URL` как полный адрес API; для статической сборки укажите его до `npm run build`. Пример значений — в [`.env.example`](.env.example).
+Адрес API не задан в компонентах. При запуске через Docker Compose `VITE_API_URL` по умолчанию равен `http://localhost:8000`: браузер отправляет запросы напрямую в backend. Для локального запуска с пустым `VITE_API_URL` запросы на `/api` идут через прокси dev-сервера Vite; его цель задаётся переменной `VITE_API_PROXY_TARGET` (по умолчанию `http://localhost:8000`). Если backend доступен по другому адресу, укажите `VITE_API_PROXY_TARGET` в `spa-front/frontend/.env.local`. Для статической сборки укажите `VITE_API_URL` до `npm run build`. Пример значений — в [`.env.example`](.env.example).
 
 Переключатель объекта загружает варианты из `/api/meta` и передаёт выбранный объект в поддерживающие его запросы. Эндпоинты цен и экономики услуг не имеют фильтра по объекту, поэтому их показатели относятся ко всей сети SPA.
 
