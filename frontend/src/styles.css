@@ -849,9 +849,6 @@ td strong {
   height: auto;
   margin-bottom: 0;
 }
-.planning-top {
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-}
 .bar-chart {
   display: grid;
   gap: 15px;
@@ -1204,6 +1201,11 @@ td strong {
     grid-template-columns: 190px minmax(0, 1fr);
   }
 }
+@media (max-width: 1000px) {
+  .planning-grid {
+    grid-template-columns: 1fr;
+  }
+}
 @media (max-width: 760px) {
   .app-shell {
     display: block;
@@ -1282,7 +1284,6 @@ td strong {
     font-size: 2rem;
   }
   .two-col,
-  .planning-top,
   .alert-grid,
   .chat-layout {
     grid-template-columns: 1fr;

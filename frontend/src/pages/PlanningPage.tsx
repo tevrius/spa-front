@@ -151,7 +151,7 @@ export function PlanningPage() {
               <span>Проверьте приоритеты позиций в плане.</span>
             </div>
           )}
-          <div className="two-col planning-grid planning-top">
+          <div className="two-col planning-grid">
             <Panel
               title="Бюджет по месяцам"
               eyebrow={`${date(budget.data.period_from)} — ${date(budget.data.period_to)}`}
